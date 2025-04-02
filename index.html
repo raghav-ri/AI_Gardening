@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenAI | Smart Crop Recommendation System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #388e3c;
+            --primary-light: #6abf69;
+            --primary-dark: #00600f;
+            --accent: #ffd54f;
+            --text: #2e3a47;
+            --light: #f5f7fa;
+            --white: #ffffff;
+            --shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            --radius: 20px;
+            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url('https://images.unsplash.com/photo-1534710961216-75c88202f43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px 20px;
+            line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.88);
+            z-index: 0;
+        }
+        
+        .container {
+            background: var(--white);
+            max-width: 520px;
+            margin: 0 auto;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(5px);
+        }
+        
+        .container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--white);
+            padding: 35px 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: var(--white);
+            clip-path: ellipse(65% 100% at 50% 0%);
+            z-index: 2;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 i {
+            margin-right: 15px;
+            font-size: 36px;
+            color: var(--accent);
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+            font-weight: 300;
+            position: relative;
+            z-index: 1;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+        
+        .content {
+            padding: 45px 35px 35px;
+        }
+        
+        .input-group {
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 500;
+            color: var(--primary-dark);
+            font-size: 16px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 16px 24px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 16px;
+            transition: var(--transition);
+            background-color: rgba(255, 255, 255, 0.8);
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: var(--white);
+            box-shadow: 0 0 0 4px rgba(56, 142, 60, 0.2);
+        }
+        
+        .input-group input::placeholder {
+            color: #aaa;
+            font-weight: 300;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--white);
+            border: none;
+            padding: 18px 30px;
+            font-size: 17px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            transition: var(--transition);
+            box-shadow: 0 6px 20px rgba(56, 142, 60, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(56, 142, 60, 0.4);
+        }
+        
+        .btn:hover::after {
+            left: 100%;
+        }
+        
+        .btn i {
+            margin-right: 12px;
+            font-size: 20px;
+        }
+        
+        #result {
+            margin-top: 35px;
+            padding: 0;
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: var(--transition);
+            max-height: 0;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        #result.show {
+            max-height: 600px;
+            opacity: 1;
+            padding: 25px;
+            background: rgba(245, 247, 250, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transform: translateY(0);
+            backdrop-filter: blur(5px);
+        }
+        
+        #result h3 {
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            font-size: 22px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        #result h3 i {
+            margin-right: 12px;
+            color: var(--primary);
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            align-items: center;
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-item strong {
+            color: var(--primary-dark);
+            font-weight: 600;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .result-item .value {
+            font-weight: 500;
+            text-align: right;
+        }
+        
+        .crop-highlight {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 20px;
+            background: rgba(56, 142, 60, 0.1);
+            padding: 8px 16px;
+            border-radius: 50px;
+            display: inline-block;
+        }
+        
+        .error-message {
+            color: #d32f2f;
+            background: rgba(255, 235, 238, 0.8);
+            padding: 18px;
+            border-radius: var(--radius);
+            border-left: 4px solid #d32f2f;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .error-message i {
+            margin-right: 12px;
+            font-size: 20px;
+        }
+        
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .loading i {
+            color: var(--primary);
+            font-size: 26px;
+            margin-right: 15px;
+            animation: spin 1.2s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .credits {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--text);
+            font-size: 14px;
+            opacity: 0.8;
+            position: relative;
+            z-index: 1;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .credits strong {
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: var(--text);
+            font-size: 14px;
+            position: relative;
+            z-index: 1;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .leaf-decoration {
+            position: absolute;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .leaf-1 {
+            top: 10%;
+            left: 5%;
+            font-size: 120px;
+            color: var(--primary);
+            transform: rotate(-15deg);
+        }
+        
+        .leaf-2 {
+            bottom: 15%;
+            right: 5%;
+            font-size: 150px;
+            color: var(--primary-dark);
+            transform: rotate(25deg);
+        }
+        
+        @media (max-width: 576px) {
+            .header h1 {
+                font-size: 26px;
+            }
+            
+            .header p {
+                font-size: 14px;
+            }
+            
+            .content {
+                padding: 35px 25px;
+            }
+            
+            .input-group input {
+                padding: 14px 20px;
+            }
+            
+            .btn {
+                padding: 16px 20px;
+                font-size: 15px;
+            }
+        }
+    </style>
+    <script>
+        async function getRecommendation() {
+            let city = document.getElementById("cityInput").value.trim();
+            let resultDiv = document.getElementById("result");
+            
+            // Reset result div
+            resultDiv.className = '';
+            resultDiv.innerHTML = '';
+            
+            if (!city) {
+                resultDiv.className = 'show';
+                resultDiv.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i> 
+                        Please enter a city name to get recommendations!
+                    </div>
+                `;
+                return;
+            }
+
+            resultDiv.className = 'show';
+            resultDiv.innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    <span>Analyzing weather patterns and soil conditions for ${city}...</span>
+                </div>
+            `;
+
+            try {
+                let response = await fetch(`http://127.0.0.1:5000/get-crop?city=${city}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Server responded with status ${response.status}`);
+                }
+
+                let data = await response.json();
+                
+                if (data.error) {
+                    resultDiv.innerHTML = `
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-circle"></i> 
+                            ${data.error}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <h3><i class="fas fa-chart-line"></i> Agricultural Analysis</h3>
+                        <div class="result-item">
+                            <strong><i class="fas fa-city"></i> Location:</strong>
+                            <span class="value">${data.city}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong><i class="fas fa-thermometer-half"></i> Temperature:</strong>
+                            <span class="value">${data.temperature}°C</span>
+                        </div>
+                        <div class="result-item">
+                            <strong><i class="fas fa-tint"></i> Humidity:</strong>
+                            <span class="value">${data.humidity}%</span>
+                        </div>
+                        <div class="result-item">
+                            <strong><i class="fas fa-cloud-rain"></i> Rainfall:</strong>
+                            <span class="value">${data.rainfall}mm</span>
+                        </div>
+                        <div class="result-item" style="margin-top: 20px; padding-top: 20px; border-top: 2px dashed rgba(0,0,0,0.1);">
+                            <strong style="font-size: 17px;"><i class="fas fa-star"></i> Optimal Crop:</strong>
+                            <span class="value crop-highlight">
+                                <i class="fas fa-seedling"></i> ${data.recommended_crop}
+                            </span>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error("Fetch error:", error);
+                resultDiv.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        Could not connect to our agricultural intelligence service. Please check your connection and try again.
+                    </div>
+                `;
+            }
+        }
+        
+        // Add event listener for Enter key
+        document.getElementById("cityInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                getRecommendation();
+            }
+        });
+        
+        // Add animation when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                container.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</head>
+<body>
+    <i class="fas fa-leaf leaf-decoration leaf-1"></i>
+    <i class="fas fa-leaf leaf-decoration leaf-2"></i>
+    
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-brain"></i> GreenAI</h1>
+            <p>Intelligent crop recommendation system powered by machine learning</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-group">
+                <label for="cityInput"><i class="fas fa-map-marked-alt"></i> ENTER YOUR LOCATION</label>
+                <input type="text" id="cityInput" placeholder="E.g., Bengaluru, Pune, Hyderabad..." autocomplete="off" autofocus>
+            </div>
+            
+            <button class="btn" onclick="getRecommendation()">
+                <i class="fas fa-robot"></i> Generate Smart Recommendation
+            </button>
+            
+            <div id="result"></div>
+            
+            <div class="credits">
+                <p>Developed with ❤️ by <strong>Raghav Issar (12304133)</strong>, <strong>Vishal Singh (12319340)</strong>, and <strong>Ravi Jha (12321663)</strong></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>© 2023 <a href="#">GreenAI</a> | Revolutionizing agriculture through artificial intelligence</p>
+    </div>
+</body>
+</html>

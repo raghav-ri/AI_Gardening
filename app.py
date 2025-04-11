@@ -8,9 +8,9 @@ from weather_api import get_weather  # Import weather function
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app)  # ✅ Fixes "Failed to fetch" issue by allowing cross-origin requests
+CORS(app)  # Enables cross-origin requests
 
-# ✅ Load trained model, scaler, label encoders, and target encoder
+# Load trained model, scaler, label encoders, and target encoder
 with open("crop_model.pkl", "rb") as file:
     model, scaler, label_encoders, target_encoder = pickle.load(file)
 
@@ -28,14 +28,6 @@ def get_crop():
     if temperature is None or humidity is None or rainfall is None:
         return jsonify({"error": "Failed to fetch weather data"}), 500
 
-    # ✅ Print debug info in terminal
-    print("\n===================================")
-    print(f"🌍 Requested City: {city}")  
-    print(f"🌡 Temperature: {temperature}°C")  
-    print(f"💧 Humidity: {humidity}%")  
-    print(f"🌧 Rainfall: {rainfall}mm")  
-    print("===================================")
-
     # Prepare input data with default values for pH, soil type, and season
     input_data = pd.DataFrame([[temperature, humidity, rainfall, 6.5, "Loamy", "Summer"]],
                               columns=['temperature', 'humidity', 'rainfall', 'ph', 'soil_type', 'season'])
@@ -45,23 +37,19 @@ def get_crop():
         if col in label_encoders:
             input_data[col] = label_encoders[col].transform(input_data[col])
         else:
-            print(f"⚠️ Label encoder missing for {col}")
+            print(f"Label encoder missing for {col}")
     
     # Scale numerical features
     input_scaled = scaler.transform(input_data)
 
     # Predict crop
     predicted_crop_encoded = model.predict(input_scaled)[0]
-    print(f"📊 Encoded Prediction: {predicted_crop_encoded}")
 
     # Ensure the predicted value is within target_encoder's range
     if predicted_crop_encoded not in range(len(target_encoder.classes_)):
-        print(f"⚠️ Prediction out of range: {predicted_crop_encoded}")
         return jsonify({"recommended_crop": "Unknown Crop"})
 
     predicted_crop = target_encoder.inverse_transform([predicted_crop_encoded])[0]
-    print(f"🌾 Recommended Crop: {predicted_crop}")
-    print("===================================\n")
 
     return jsonify({
         "city": city,
@@ -71,5 +59,4 @@ def get_crop():
         "recommended_crop": predicted_crop
     })
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# Note: Do not include app.run() for production. Deployment platform uses gunicorn.
